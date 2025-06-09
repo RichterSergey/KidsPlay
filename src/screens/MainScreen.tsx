@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
-import VideoCard from '../components/VideoCard'; // Импортируем VideoCard
+import VideoCard from '../components/VideoCard';
 
 const { width: screenWidth } = Dimensions.get('window');
-// Изменяем MAIN_CARD_HEIGHT, чтобы она занимала большую часть верхней секции
-const MAIN_CARD_HEIGHT = screenWidth * 0.9; 
+const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
+const MAIN_CARD_WIDTH = screenWidth - 40; // Ширина главной карты (учитывая marginHorizontal)
+const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
 
 // Пример видео для демонстрации. В реальном приложении это может быть загружено из API
 const sampleVideos = [
@@ -52,21 +53,17 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.contentScrollView}>
+      <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
         {/* Main Video Card Area */}
         {mainVideo && (
           <TouchableOpacity
             style={styles.mainVideoCardWrapper}
             onPress={() => navigation.navigate('FullScreenVideo', mainVideo)}
           >
-            {/* Используем VideoCard для мини-плеера вместо Image для миниатюры */}
-            <VideoCard 
-              cardWidth={screenWidth - 20} // Ширина главной карты (почти весь экран)
-              title={mainVideo.title} // Заголовок будет наложен отдельно
-              videoUrl={mainVideo.videoUrl}
-              onPress={() => navigation.navigate('FullScreenVideo', mainVideo)}
-              isPlaying={false} // Видео приостановлено по умолчанию
-              showTitle={false} // Заголовок не отображается внутри VideoCard, так как он наложен
+            {/* Используем Image для миниатюры главной карты */}
+            <Image 
+              source={{ uri: mainVideo.thumbnail }}
+              style={styles.mainVideoThumbnail}
             />
             <View style={styles.mainVideoOverlay}>
               <Text style={styles.mainVideoTitle}>{mainVideo.title}</Text>
@@ -149,9 +146,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     backgroundColor: '#00BCD4', // Цвет заголовка как на изображении
-    paddingTop: 40, // Для учета статус-бара
+    paddingTop: 40,
+    borderBottomRightRadius: 30, // Для диагонального эффекта
   },
   headerText: {
     fontSize: 20,
@@ -172,18 +171,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainVideoCardWrapper: {
+    width: MAIN_CARD_WIDTH,
     height: MAIN_CARD_HEIGHT,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
     marginTop: 10,
-    borderRadius: 8,
+    borderRadius: 15, // Более скругленные углы
     overflow: 'hidden',
-    position: 'relative', // Для наложения текста
+    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    backgroundColor: '#fff', // Добавим фон, чтобы VideoCard не был прозрачным
+    backgroundColor: '#fff',
+  },
+  mainVideoThumbnail: {
+    width: '100%',
+    height: '100%',
   },
   mainVideoOverlay: {
     position: 'absolute',
@@ -191,8 +195,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 15,
-    // background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); // Можно попробовать позже для градиента
-    backgroundColor: 'rgba(0,0,0,0.4)', // Полупрозрачный фон для текста
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  mainVideoTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 5,
   },
   mainVideoActions: {
     flexDirection: 'row',
@@ -219,10 +228,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    marginHorizontal: 10,
+    marginHorizontal: 20, // Увеличиваем горизонтальные отступы
     backgroundColor: '#fff',
     borderRadius: 25,
-    marginTop: 10,
+    marginTop: 20, // Увеличиваем верхний отступ
   },
   searchBarText: {
     flex: 1,
@@ -238,6 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
+    paddingTop: 20, // Увеличиваем верхний отступ
     paddingBottom: 0,
   },
   categoriesTitle: {
@@ -249,9 +259,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   horizontalVideoList: {
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingBottom: 10, // Добавим немного отступа снизу
+    paddingLeft: 10, // Отступ для первого элемента
+    paddingRight: 10, // Отступ для последнего элемента
+    paddingBottom: 10,
   },
   bottomNavBar: {
     flexDirection: 'row',
@@ -272,12 +282,6 @@ const styles = StyleSheet.create({
   navText: {
     fontSize: 12,
     color: '#666',
-  },
-  mainVideoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
   },
 });
 
