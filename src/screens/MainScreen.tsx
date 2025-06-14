@@ -1,18 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image, StatusBar, Platform } from 'react-native';
 import VideoCard from '../components/VideoCard';
+import { theme } from '../theme/theme';
 
 const { width: screenWidth } = Dimensions.get('window');
-const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
-const MAIN_CARD_WIDTH = screenWidth - 40; // Ширина главной карты (учитывая marginHorizontal)
-const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
+const ITEM_WIDTH = screenWidth - (theme.spacing.lg * 2);
+const MAIN_CARD_HEIGHT = 480; // Фиксированная высота главной карты
 
 // Пример видео для демонстрации. В реальном приложении это может быть загружено из API
 const sampleVideos = [
   {
     id: '1',
     title: 'DIY Paper Tunnel Race',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    videoUrl: 'C:/Users/richt/Desktop/777.mp4',
     thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
     type: 'Activities',
   },
@@ -37,54 +37,91 @@ const sampleVideos = [
     thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg',
     type: 'Games',
   },
+  {
+    id: '5',
+    title: 'Пример видео 5 (новое)',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg',
+    type: 'Animation',
+  },
+  {
+    id: '6',
+    title: 'Пример видео 6 (новое)',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg',
+    type: 'Cars',
+  },
+  {
+    id: '7',
+    title: 'Пример видео 7 (новое)',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg',
+    type: 'Sci-Fi',
+  },
 ];
 
 const MainScreen: React.FC<any> = ({ navigation }) => {
   const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
+  const currentTime = "14:43"; // Заглушка для времени
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
       {/* Top Header */}
       <View style={styles.headerContainer}>
+        <View style={styles.headerTopRow}>
+          <Text style={styles.timeText}>{currentTime}</Text>
+          <TouchableOpacity style={styles.upgradeButton}>
+            <Text style={styles.upgradeButtonText}>UPGRADE</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.headerText}>Ideas of the week</Text>
-        <TouchableOpacity style={styles.upgradeButton}>
-          <Text style={styles.upgradeButtonText}>UPGRADE</Text>
-        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
         {/* Main Video Card Area */}
-        {mainVideo && (
-          <TouchableOpacity
-            style={styles.mainVideoCardWrapper}
-            onPress={() => navigation.navigate('FullScreenVideo', mainVideo)}
-          >
-            {/* Используем Image для миниатюры главной карты */}
-            <Image 
-              source={{ uri: mainVideo.thumbnail }}
-              style={styles.mainVideoThumbnail}
-            />
-            <View style={styles.mainVideoOverlay}>
-              <Text style={styles.mainVideoTitle}>{mainVideo.title}</Text>
-              <View style={styles.mainVideoActions}>
-                <View style={styles.mainVideoActivity}>
-                  <Text style={styles.playIcon}>▶️</Text>
-                  <Text style={styles.activityText}>{mainVideo.type}</Text>
+        <FlatList
+          data={sampleVideos}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.mainVideoCardWrapper}
+              onPress={() => navigation.navigate('FullScreenVideo', item)}
+            >
+              <Image
+                source={{ uri: item.thumbnail }}
+                style={styles.mainVideoThumbnail}
+              />
+              <View style={styles.mainVideoOverlay}>
+                <Text style={styles.mainVideoTitle}>{item.title}</Text>
+                <View style={styles.mainVideoActions}>
+                  <View style={styles.playActivityContainer}>
+                    <Text style={styles.playIcon}>▶️</Text>
+                    <Text style={styles.activityText}>{item.type}</Text>
+                  </View>
+                  <TouchableOpacity style={styles.bookmarkIcon}>
+                    <Text>🔖</Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.bookmarkIcon}>
-                  <Text style={{ fontSize: 24 }}>🔖</Text>
-                </TouchableOpacity>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          nestedScrollEnabled={true}
+          snapToInterval={ITEM_WIDTH} // Снап к ширине элемента
+          decelerationRate="fast"
+          snapToAlignment="center"
+          contentContainerStyle={styles.mainVideoListContent}
+        />
 
         {/* Search Bar */}
         <View style={styles.searchBarContainer}>
-          <Text style={styles.searchBarText}>🔍 Search...</Text>
+          <Text style={styles.searchBarPlaceholder}>🔍 Search...</Text>
           <TouchableOpacity style={styles.filterButton}>
-            <Text>🎛️</Text>
+            <Text style={styles.filterIcon}>≡</Text>
           </TouchableOpacity>
         </View>
 
@@ -92,18 +129,18 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.categoriesHeader}>
           <Text style={styles.categoriesTitle}>Indoor</Text>
           <TouchableOpacity style={styles.categoriesArrow}>
-            <Text>⬇️</Text>
+            <Text>≫</Text>
           </TouchableOpacity>
         </View>
         <FlatList
           data={otherVideos}
           renderItem={({ item }) => (
             <VideoCard
-              cardWidth={screenWidth / 2 - 20} // Ширина карты (половина экрана минус отступы)
+              cardWidth={screenWidth / 2 - theme.spacing.lg} // Ширина карты (половина экрана минус отступы)
               title={item.title}
               videoUrl={item.videoUrl}
               onPress={() => navigation.navigate('FullScreenVideo', item)}
-              isPlaying={false} // Эти карты тоже должны быть статичными миниатюрами
+              isPlaying={false}
               showTitle={true}
             />
           )}
@@ -116,16 +153,16 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🏠</Text>
-          <Text style={styles.navText}>Browse</Text>
+        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]}>
+          <Text style={[styles.navIcon, styles.activeNavIcon]}>🏠</Text>
+          <Text style={[styles.navText, styles.activeNavText]}>Browse</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🗄️</Text>
+          <Text style={styles.navIcon}>📚</Text>
           <Text style={styles.navText}>Library</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🔎</Text>
+          <Text style={styles.navIcon}>🔍</Text>
           <Text style={styles.navText}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
@@ -140,148 +177,190 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0F2F7', // Светло-голубой фон как на изображении
+    backgroundColor: theme.colors.background,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Добавляем отступ для StatusBar только на Android
   },
   headerContainer: {
+    backgroundColor: theme.colors.primary,
+    paddingTop: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderBottomRightRadius: theme.borderRadius.xl,
+    ...theme.shadows.medium,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#00BCD4', // Цвет заголовка как на изображении
-    paddingTop: 40,
-    borderBottomRightRadius: 30, // Для диагонального эффекта
+    width: '100%',
+    marginBottom: theme.spacing.sm,
+  },
+  timeText: {
+    ...theme.typography.caption,
+    color: theme.colors.surface,
   },
   headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
+    ...theme.typography.h2,
+    color: theme.colors.surface,
+    textAlign: 'center',
   },
   upgradeButton: {
-    backgroundColor: '#FFEB3B', // Желтый цвет кнопки Upgrade
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+    backgroundColor: theme.colors.accent,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.borderRadius.lg,
+    ...theme.shadows.small,
   },
   upgradeButtonText: {
-    color: '#000',
+    color: theme.colors.text.primary,
     fontWeight: 'bold',
   },
   contentScrollView: {
     flex: 1,
   },
   mainVideoCardWrapper: {
-    width: MAIN_CARD_WIDTH,
+    width: ITEM_WIDTH - theme.spacing.md, // Фактическая ширина карты минус отступ для зазора
     height: MAIN_CARD_HEIGHT,
-    marginHorizontal: 20,
-    marginTop: 10,
-    borderRadius: 15, // Более скругленные углы
+    marginTop: theme.spacing.md,
+    borderRadius: theme.borderRadius.lg,
     overflow: 'hidden',
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    backgroundColor: '#fff',
+    ...theme.shadows.large,
+    backgroundColor: theme.colors.surface,
+    marginRight: theme.spacing.md, // Отступ справа от каждой карты
   },
   mainVideoThumbnail: {
     width: '100%',
     height: '100%',
+    borderTopLeftRadius: theme.borderRadius.lg,
+    borderTopRightRadius: theme.borderRadius.lg,
   },
   mainVideoOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 15,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: theme.spacing.lg,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   mainVideoTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
+    ...theme.typography.h2,
+    color: theme.colors.surface,
+    marginBottom: theme.spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
   },
   mainVideoActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  mainVideoActivity: {
+  playActivityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
   },
   playIcon: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 5,
+    fontSize: 16,
+    color: theme.colors.primary,
+    marginRight: theme.spacing.xs,
   },
   activityText: {
-    fontSize: 16,
-    color: '#fff',
+    ...theme.typography.caption,
+    color: theme.colors.text.primary,
+    fontWeight: 'bold',
   },
   bookmarkIcon: {
-    padding: 5,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.sm,
   },
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    marginHorizontal: 20, // Увеличиваем горизонтальные отступы
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    marginTop: 20, // Увеличиваем верхний отступ
+    padding: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.xl,
+    marginTop: theme.spacing.lg,
+    ...theme.shadows.small,
   },
-  searchBarText: {
+  searchBarPlaceholder: {
     flex: 1,
-    fontSize: 16,
-    color: '#666',
-    paddingLeft: 10,
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    paddingLeft: theme.spacing.sm,
   },
   filterButton: {
-    padding: 5,
+    padding: theme.spacing.xs,
+  },
+  filterIcon: {
+    fontSize: 20,
+    color: theme.colors.primary,
   },
   categoriesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    paddingTop: 20, // Увеличиваем верхний отступ
+    padding: theme.spacing.lg,
+    paddingTop: theme.spacing.xl,
     paddingBottom: 0,
   },
   categoriesTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    ...theme.typography.h3,
+    color: theme.colors.text.primary,
   },
   categoriesArrow: {
-    padding: 5,
+    padding: theme.spacing.xs,
   },
   horizontalVideoList: {
-    paddingLeft: 10, // Отступ для первого элемента
-    paddingRight: 10, // Отступ для последнего элемента
-    paddingBottom: 10,
+    paddingLeft: theme.spacing.sm,
+    paddingRight: theme.spacing.sm,
+    paddingBottom: theme.spacing.md,
   },
   bottomNavBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 60,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+    height: 70, // Скорректированная высота для лучшего соответствия изображению
+    backgroundColor: theme.colors.surface,
+    borderTopWidth: 0,
+    ...theme.shadows.medium,
   },
   navItem: {
     alignItems: 'center',
-    padding: 5,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+  },
+  activeNavItem: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.lg, // Изменил на lg для менее круглого вида
+    paddingVertical: theme.spacing.md, // Увеличил вертикальный отступ
+    paddingHorizontal: theme.spacing.md + theme.spacing.sm,
+    ...theme.shadows.small,
   },
   navIcon: {
-    fontSize: 24,
+    fontSize: theme.typography.h3.fontSize, // Использование h3 для большего размера
+    marginBottom: theme.spacing.xs / 2,
+    color: theme.colors.text.secondary,
+  },
+  activeNavIcon: {
+    color: theme.colors.surface,
   },
   navText: {
-    fontSize: 12,
-    color: '#666',
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+  },
+  activeNavText: {
+    color: theme.colors.surface,
+  },
+  mainVideoListContent: {
+    paddingHorizontal: theme.spacing.lg, // Отступ для первого и последнего элемента
   },
 });
 

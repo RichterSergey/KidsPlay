@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, View, Text } from 'react-native';
 import Video from 'react-native-video';
+import { theme } from '../theme/theme';
 
 interface VideoCardProps {
   videoUrl: string;
@@ -13,7 +14,14 @@ interface VideoCardProps {
 
 const VideoCard: React.FC<VideoCardProps> = ({ videoUrl, title, onPress, cardWidth, isPlaying = false, showTitle = true }) => {
   return (
-    <TouchableOpacity style={[styles.container, cardWidth ? { width: cardWidth } : {}]} onPress={onPress}>
+    <TouchableOpacity 
+      style={[
+        styles.container, 
+        cardWidth ? { width: cardWidth } : {},
+        theme.shadows.medium
+      ]} 
+      onPress={onPress}
+    >
       <View style={styles.videoContainer}>
         <Video
           source={{ uri: videoUrl }}
@@ -23,30 +31,27 @@ const VideoCard: React.FC<VideoCardProps> = ({ videoUrl, title, onPress, cardWid
           muted={true}
         />
       </View>
-      {showTitle && <Text style={styles.title}>{title}</Text>}
+      {showTitle && (
+        <Text style={styles.title} numberOfLines={2}>
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    margin: theme.spacing.sm,
+    overflow: 'hidden',
   },
   videoContainer: {
     width: '100%',
-    height: 200,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    height: 220,
+    borderTopLeftRadius: theme.borderRadius.md,
+    borderTopRightRadius: theme.borderRadius.md,
     overflow: 'hidden',
   },
   video: {
@@ -54,9 +59,10 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   title: {
-    padding: 10,
-    fontSize: 16,
-    fontWeight: '500',
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
+    ...theme.typography.body,
+    color: theme.colors.text.primary,
   },
 });
 
