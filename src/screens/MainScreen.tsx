@@ -59,7 +59,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
   );
   const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
-
+  const [activeIndex, setActiveIndex] = useState(0);
   return (
     <SafeAreaView style={styles.container}>
       {/* Top Header */}
@@ -72,35 +72,50 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 
       <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
         {/* Main Video Card Area */}
-        {mainVideo && (
-          <TouchableOpacity
-            style={styles.mainVideoCardWrapper}
-            onPress={() => navigation.navigate('FullScreenVideo', mainVideo)}
-          >
-            {/* Используем Image для миниатюры главной карты */}
-            <Video
-                source={{ uri: mainVideo.videoUrl }}
-                style={styles.mainVideoThumbnail}
-                resizeMode="cover"
-                repeat
-                muted
-                paused={!isFocused}
-                ignoreSilentSwitch="obey"
-            />
-            <View style={styles.mainVideoOverlay}>
-              <Text style={styles.mainVideoTitle}>{mainVideo.title}</Text>
-              <View style={styles.mainVideoActions}>
-                <View style={styles.mainVideoActivity}>
-                  <Text style={styles.playIcon}></Text>
-                  <Text style={styles.activityText}>{mainVideo.type}</Text>
-                </View>
-                <TouchableOpacity style={styles.bookmarkIcon}>
-                  <Text style={{ fontSize: 24 }}></Text>
+        <FlatList
+            data={sampleVideos.slice(0, 3)}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item, index }) => (
+                <TouchableOpacity
+                    style={styles.mainVideoCardWrapper}
+                    onPress={() => navigation.navigate('FullScreenVideo', item)}
+                >
+                  <Video
+                      source={{ uri: item.videoUrl }}
+                      style={styles.mainVideoThumbnail}
+                      resizeMode="cover"
+                      repeat
+                      muted
+                      paused={!isFocused || activeIndex !== index}
+                      ignoreSilentSwitch="obey"
+                  />
+                  <View style={styles.mainVideoOverlay}>
+                    <Text style={styles.mainVideoTitle}>{item.title}</Text>
+                    <View style={styles.mainVideoActions}>
+                      <View style={styles.mainVideoActivity}>
+                        <Text style={styles.playIcon}></Text>
+                        <Text style={styles.activityText}>{item.type}</Text>
+                      </View>
+                      <TouchableOpacity style={styles.bookmarkIcon}>
+                        <Text style={{ fontSize: 24 }}></Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+            )}
+            snapToAlignment="center"
+            decelerationRate="fast"
+            contentContainerStyle={styles.mainCarousel}
+            onMomentumScrollEnd={(event) => {
+              const index = Math.round(
+                  event.nativeEvent.contentOffset.x / MAIN_CARD_WIDTH
+              );
+              setActiveIndex(index);
+            }}
+        />
 
         {/* Search Bar */}
         <View style={styles.searchBarContainer}>
@@ -295,20 +310,23 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   bottomNavBar: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 70,
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // прозрачный белый
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingBottom: 10,
     paddingTop: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   navItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '25%',        // каждая иконка занимает 25% ширины панели
+    flex: 1,
     paddingVertical: 5,
   },
   navIcon: {
@@ -323,11 +341,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 90, // <= добавь
+    height: 90,
     overflow: 'hidden',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: 'transparent',
+  },
+  mainCarousel: {
+    paddingHorizontal: 10,
   },
   
 });
