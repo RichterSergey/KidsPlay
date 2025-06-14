@@ -1,4 +1,3 @@
-
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
 import VideoCard from '../components/VideoCard';
 import BrowseIcon from '../assets/icons/browse.svg';
@@ -9,15 +8,12 @@ import { BlurView } from '@react-native-community/blur';
 import Video from 'react-native-video';
 import { useFocusEffect } from '@react-navigation/native';
 
-
 import React, { useState, useCallback } from 'react';
-
 
 const { width: screenWidth } = Dimensions.get('window');
 const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
 const MAIN_CARD_WIDTH = screenWidth - 40; // Ширина главной карты (учитывая marginHorizontal)
 const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
-
 
 // Пример видео для демонстрации. В реальном приложении это может быть загружено из API
 const sampleVideos = [
@@ -88,7 +84,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                 resizeMode="cover"
                 repeat
                 muted
-                paused={false}
+                paused={!isFocused}
                 ignoreSilentSwitch="obey"
             />
             <View style={styles.mainVideoOverlay}>
