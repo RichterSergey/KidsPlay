@@ -156,7 +156,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0F2F7', // Светло-голубой фон как на изображении
+    backgroundColor: '#F07A3E', // Светло-голубой фон как на изображении
   },
   headerContainer: {
     flexDirection: 'row',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: '#00BCD4', // Цвет заголовка как на изображении
+    backgroundColor: '#F07A3E', // Цвет заголовка как на изображении
     paddingTop: 40,
     borderBottomRightRadius: 30, // Для диагонального эффекта
   },
