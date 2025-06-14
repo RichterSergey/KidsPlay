@@ -295,6 +295,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   bottomNavBar: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -322,9 +323,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    height: 90, // <= добавь
     overflow: 'hidden',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    backgroundColor: 'transparent',
   },
   
 });
