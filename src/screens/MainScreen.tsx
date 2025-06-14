@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
 import VideoCard from '../components/VideoCard';
@@ -6,6 +5,7 @@ import BrowseIcon from '../assets/icons/browse.svg';
 import LibraryIcon from '../assets/icons/library.svg';
 import SearchIcon from '../assets/icons/search.svg';
 import ProfileIcon from '../assets/icons/profile.svg';
+import { BlurView } from '@react-native-community/blur';
 
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -76,11 +76,11 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
               <Text style={styles.mainVideoTitle}>{mainVideo.title}</Text>
               <View style={styles.mainVideoActions}>
                 <View style={styles.mainVideoActivity}>
-                  <Text style={styles.playIcon}>▶️</Text>
+                  <Text style={styles.playIcon}></Text>
                   <Text style={styles.activityText}>{mainVideo.type}</Text>
                 </View>
                 <TouchableOpacity style={styles.bookmarkIcon}>
-                  <Text style={{ fontSize: 24 }}>🔖</Text>
+                  <Text style={{ fontSize: 24 }}></Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -91,7 +91,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.searchBarContainer}>
           <Text style={styles.searchBarText}>🔍 Search...</Text>
           <TouchableOpacity style={styles.filterButton}>
-            <Text>🎛️</Text>
+            <Text></Text>
           </TouchableOpacity>
         </View>
 
@@ -99,7 +99,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.categoriesHeader}>
           <Text style={styles.categoriesTitle}>Indoor</Text>
           <TouchableOpacity style={styles.categoriesArrow}>
-            <Text>⬇️</Text>
+            <Text></Text>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -122,30 +122,36 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNavBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <BrowseIcon width={24} height={24} fill="white" />
-          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-        </TouchableOpacity>
+      <View style={styles.bottomNavWrapper}>
+        <BlurView
+            style={styles.bottomNavBar}
+            blurType="light"
+            blurAmount={10}
+            reducedTransparencyFallbackColor="white">
+          <TouchableOpacity style={styles.navItem}>
+            <BrowseIcon width={33} height={33} fill="white" />
+            <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
-          <LibraryIcon width={24} height={24} fill="white" />
-          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <LibraryIcon width={33} height={33} fill="white" />
+            <Text style={[styles.navText, { color: 'white' }]}>Library</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
-          <SearchIcon width={24} height={24} fill="white" />
-          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <SearchIcon width={33} height={33} fill="white" />
+            <Text style={[styles.navText, { color: 'white' }]}>Search</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
-          <ProfileIcon width={24} height={24} fill="white" />
-          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <ProfileIcon width={33} height={33} fill="white" />
+            <Text style={[styles.navText, { color: 'white' }]}>Profile</Text>
+          </TouchableOpacity>
+        </BlurView>
       </View>
     </SafeAreaView>
   );
-};
+}; 
 
 const styles = StyleSheet.create({
   container: {
@@ -277,14 +283,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 60,
-    backgroundColor: 'transparent',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+    height: 70,
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // прозрачный белый
+    paddingBottom: 10,
+    paddingTop: 10,
   },
   navItem: {
     alignItems: 'center',
-    padding: 5,
+    justifyContent: 'center',
+    width: '25%',        // каждая иконка занимает 25% ширины панели
+    paddingVertical: 5,
   },
   navIcon: {
     fontSize: 24,
@@ -293,6 +302,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
+  bottomNavWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  
 });
 
 export default MainScreen; 
