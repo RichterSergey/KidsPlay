@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, ScrollView, Dimensions } from 'react-native';
 import Video from 'react-native-video';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { theme } from '../theme/theme';
 
 type RootStackParamList = {
   Home: undefined;
@@ -64,7 +65,7 @@ const FullScreenVideo: React.FC<FullScreenVideoProps> = ({ route, navigation }) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   videoWrapper: {
     width: '100%',
     height: Dimensions.get('window').height * 0.6,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -82,59 +83,66 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 20,
-    right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 20,
-    padding: 8,
+    top: theme.spacing.lg,
+    right: theme.spacing.lg,
+    backgroundColor: 'rgba(241, 239, 240, 0.5)',
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.sm,
     zIndex: 10,
+    ...theme.shadows.small,
   },
   closeButtonText: {
-    color: '#fff',
+    color: theme.colors.text.primary,
     fontSize: 20,
     fontWeight: 'bold',
   },
   bannerContainer: {
-    backgroundColor: '#FFEB3B',
-    padding: 15,
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    ...theme.shadows.small,
   },
   bannerText: {
-    fontSize: 14,
+    ...theme.typography.h3,
     fontWeight: 'bold',
-    color: '#000',
+    color: theme.colors.surface,
   },
   bannerSubText: {
-    fontSize: 12,
-    color: '#000',
+    ...theme.typography.caption,
+    color: theme.colors.surface,
     flex: 1,
-    marginLeft: 10,
+    marginLeft: theme.spacing.sm,
   },
   unlockButton: {
-    backgroundColor: '#00BCD4',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.borderRadius.lg,
+    ...theme.shadows.medium,
   },
   unlockButtonText: {
-    color: '#fff',
+    color: theme.colors.surface,
     fontWeight: 'bold',
+    fontSize: theme.typography.body.fontSize,
   },
   descriptionContainer: {
-    padding: 15,
-    backgroundColor: '#fff',
+    padding: theme.spacing.lg,
+    backgroundColor: theme.colors.surface,
+    ...theme.shadows.small,
+    marginTop: theme.spacing.md,
   },
   titleText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    ...theme.typography.h2,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.text.primary,
   },
   descriptionText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#555',
+    ...theme.typography.body,
+    color: theme.colors.text.secondary,
+    lineHeight: theme.typography.body.lineHeight * 1.2,
   },
 });
 
