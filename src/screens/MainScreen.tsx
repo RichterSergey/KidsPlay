@@ -160,10 +160,12 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>📚</Text>
           <Text style={styles.navText}>Library</Text>
+          <View style={styles.navTextUnderline} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>🔍</Text>
           <Text style={styles.navText}>Search</Text>
+          <View style={styles.navTextUnderline} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>👤</Text>
@@ -181,11 +183,11 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Добавляем отступ для StatusBar только на Android
   },
   headerContainer: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.background,
     paddingTop: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.lg,
     paddingBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderBottomRightRadius: theme.borderRadius.xl,
+    borderBottomRightRadius: 0, // Удален радиус скругления, чтобы соответствовать общему виду
     ...theme.shadows.medium,
   },
   headerTopRow: {
@@ -205,14 +207,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   upgradeButton: {
-    backgroundColor: theme.colors.accent,
+    backgroundColor: theme.colors.primary,
     paddingVertical: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.borderRadius.lg,
     ...theme.shadows.small,
   },
   upgradeButtonText: {
-    color: theme.colors.text.primary,
+    color: theme.colors.surface,
     fontWeight: 'bold',
   },
   contentScrollView: {
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
   },
   mainVideoTitle: {
     ...theme.typography.h2,
-    color: theme.colors.surface,
+    color: theme.colors.text.primary,
     marginBottom: theme.spacing.xs,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingVertical: theme.spacing.xs,
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
   },
   filterIcon: {
     fontSize: 20,
-    color: theme.colors.primary,
+    color: theme.colors.text.primary,
   },
   categoriesHeader: {
     flexDirection: 'row',
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
   },
   categoriesTitle: {
     ...theme.typography.h3,
-    color: theme.colors.text.primary,
+    color: theme.colors.text.secondary,
   },
   categoriesArrow: {
     padding: theme.spacing.xs,
@@ -327,26 +329,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 70, // Скорректированная высота для лучшего соответствия изображению
+    height: 70,
     backgroundColor: theme.colors.surface,
     borderTopWidth: 0,
     ...theme.shadows.medium,
   },
   navItem: {
+    flex: 1, // Позволяет элементам занимать равное пространство
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xs,
   },
   activeNavItem: {
     backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.lg, // Изменил на lg для менее круглого вида
-    paddingVertical: theme.spacing.md, // Увеличил вертикальный отступ
-    paddingHorizontal: theme.spacing.md + theme.spacing.sm,
+    borderRadius: 50, // Для полностью округленной формы "таблетки"
+    paddingVertical: theme.spacing.sm, // Немного уменьшил вертикальный отступ
+    paddingHorizontal: theme.spacing.xl, // Увеличил горизонтальный отступ для "таблетки"
     ...theme.shadows.small,
   },
   navIcon: {
-    fontSize: theme.typography.h3.fontSize, // Использование h3 для большего размера
-    marginBottom: theme.spacing.xs / 2,
+    fontSize: theme.typography.h3.fontSize,
+    marginBottom: theme.spacing.xs / 4, // Уменьшил отступ, чтобы иконка была ближе к тексту
     color: theme.colors.text.secondary,
   },
   activeNavIcon: {
@@ -358,6 +362,12 @@ const styles = StyleSheet.create({
   },
   activeNavText: {
     color: theme.colors.surface,
+  },
+  navTextUnderline: {
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.text.secondary,
+    width: '40%', // Сделал линию короче
+    marginTop: theme.spacing.xs / 8, // Придвинул линию ближе к тексту
   },
   mainVideoListContent: {
     paddingHorizontal: theme.spacing.lg, // Отступ для первого и последнего элемента

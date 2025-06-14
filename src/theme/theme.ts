@@ -1,14 +1,12 @@
 export const theme = {
   colors: {
-    primary: '#00C4CC',
-    secondary: '#50E3C2',
-    accent: '#F5A623',
-    background: '#F8F9FA',
-    surface: '#FFFFFF',
+    primary: '#eb5757',
+    background: '#191932',
+    surface: '#F1EFF0',
     text: {
-      primary: '#2C3E50',
-      secondary: '#7F8C8D',
-      light: '#BDC3C7'
+      primary: '#252525',
+      secondary: '#d5d5d5',
+      light: '#d5d5d5'
     },
     error: '#E74C3C',
     success: '#2ECC71',
@@ -16,14 +14,14 @@ export const theme = {
   },
   typography: {
     h1: {
+      fontSize: 48,
+      fontWeight: '700' as const,
+      lineHeight: 56
+    },
+    h2: {
       fontSize: 32,
       fontWeight: '700' as const,
       lineHeight: 40
-    },
-    h2: {
-      fontSize: 24,
-      fontWeight: '700' as const,
-      lineHeight: 32
     },
     h3: {
       fontSize: 20,
