@@ -17,10 +17,10 @@ const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высот
 const sampleVideos = [
   {
     id: '1',
-    title: 'DIY Paper Tunnel Race',
+    title: '',
     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
-    type: 'Activities',
+    type: '',
   },
   {
     id: '2',
@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     backgroundColor: '#F07A3E', // Цвет заголовка как на изображении
-    paddingTop: 40,
+    paddingTop: 50,
     borderBottomRightRadius: 30, // Для диагонального эффекта
   },
   headerText: {
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   upgradeButton: {
-    backgroundColor: '#FFEB3B', // Желтый цвет кнопки Upgrade
+    backgroundColor: 'white', // Желтый цвет кнопки Upgrade
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   mainVideoCardWrapper: {
     width: MAIN_CARD_WIDTH,
-    height: MAIN_CARD_HEIGHT,
+    height: 470,
     marginHorizontal: 20,
     marginTop: 10,
     borderRadius: 15, // Более скругленные углы
