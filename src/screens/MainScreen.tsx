@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
 import VideoCard from '../components/VideoCard';
 import BrowseIcon from '../assets/icons/browse.svg';
@@ -6,12 +6,18 @@ import LibraryIcon from '../assets/icons/library.svg';
 import SearchIcon from '../assets/icons/search.svg';
 import ProfileIcon from '../assets/icons/profile.svg';
 import { BlurView } from '@react-native-community/blur';
+import Video from 'react-native-video';
+import { useFocusEffect } from '@react-navigation/native';
+
+
+import React, { useState, useCallback } from 'react';
 
 
 const { width: screenWidth } = Dimensions.get('window');
 const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
 const MAIN_CARD_WIDTH = screenWidth - 40; // Ширина главной карты (учитывая marginHorizontal)
 const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
+
 
 // Пример видео для демонстрации. В реальном приложении это может быть загружено из API
 const sampleVideos = [
@@ -47,6 +53,14 @@ const sampleVideos = [
 
 const MainScreen: React.FC<any> = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('Browse');
+  const [isFocused, setIsFocused] = useState(true);
+
+  useFocusEffect(
+      useCallback(() => {
+        setIsFocused(true);
+        return () => setIsFocused(false);
+      }, [])
+  );
   const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
 
@@ -68,9 +82,14 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
             onPress={() => navigation.navigate('FullScreenVideo', mainVideo)}
           >
             {/* Используем Image для миниатюры главной карты */}
-            <Image 
-              source={{ uri: mainVideo.thumbnail }}
-              style={styles.mainVideoThumbnail}
+            <Video
+                source={{ uri: mainVideo.videoUrl }}
+                style={styles.mainVideoThumbnail}
+                resizeMode="cover"
+                repeat
+                muted
+                paused={false}
+                ignoreSilentSwitch="obey"
             />
             <View style={styles.mainVideoOverlay}>
               <Text style={styles.mainVideoTitle}>{mainVideo.title}</Text>
