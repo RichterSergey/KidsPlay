@@ -1,6 +1,12 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
 import VideoCard from '../components/VideoCard';
+import BrowseIcon from '../assets/icons/browse.svg';
+import LibraryIcon from '../assets/icons/library.svg';
+import SearchIcon from '../assets/icons/search.svg';
+import ProfileIcon from '../assets/icons/profile.svg';
+
 
 const { width: screenWidth } = Dimensions.get('window');
 const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
@@ -40,6 +46,7 @@ const sampleVideos = [
 ];
 
 const MainScreen: React.FC<any> = ({ navigation }) => {
+  const [activeTab, setActiveTab] = useState('Browse');
   const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
 
@@ -117,20 +124,23 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
       {/* Bottom Navigation */}
       <View style={styles.bottomNavBar}>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🏠</Text>
-          <Text style={styles.navText}>Browse</Text>
+          <BrowseIcon width={24} height={24} fill="white" />
+          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🗄️</Text>
-          <Text style={styles.navText}>Library</Text>
+          <LibraryIcon width={24} height={24} fill="white" />
+          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🔎</Text>
-          <Text style={styles.navText}>Search</Text>
+          <SearchIcon width={24} height={24} fill="white" />
+          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>👤</Text>
-          <Text style={styles.navText}>Profile</Text>
+          <ProfileIcon width={24} height={24} fill="white" />
+          <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -268,7 +278,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 60,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     borderTopWidth: 1,
     borderTopColor: '#eee',
   },
