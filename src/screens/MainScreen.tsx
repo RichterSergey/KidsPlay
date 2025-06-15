@@ -78,12 +78,14 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
   const otherVideos = sampleVideos.slice(1);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const backgroundColors = ['#F07A3E', '#4CAF50', '#2196F3', '#9C27B0', '#4CAF50', '#2196F3'];
+  const inputRange = sampleVideos.map((_, index) => index * (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN));
+
+  const backgroundColors = ['#F07A3E', '#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#03A9F4'];
 
   const interpolatedColor = scrollX.interpolate({
-    inputRange: [0, screenWidth, screenWidth * 2],
-    outputRange: [backgroundColors[0], backgroundColors[1], backgroundColors[2]],
-    extrapolate: 'clamp'
+    inputRange,
+    outputRange: backgroundColors,
+    extrapolate: 'clamp',
   });
 
   return (
@@ -149,7 +151,9 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                 )}
                 snapToInterval={MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN}
                 decelerationRate="fast"
-                contentContainerStyle={styles.mainCarousel}
+                contentContainerStyle={{
+                  paddingHorizontal: (screenWidth - MAIN_CARD_WIDTH) / 2, // ➤ Это центрирует карточки
+                }}
                 onMomentumScrollEnd={(event) => {
                   const index = Math.round(
                       event.nativeEvent.contentOffset.x / (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN)
@@ -160,7 +164,7 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 
             {/* Search Bar */}
             <View style={styles.searchBarContainer}>
-              <Text style={styles.searchBarText}>🔍 Search...</Text>
+              <Text style={styles.searchBarText}>Search...</Text>
               <TouchableOpacity style={styles.filterButton}>
                 <Text></Text>
               </TouchableOpacity>
@@ -367,7 +371,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   navItem: {
-    flex: 1,
+  
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 5,
