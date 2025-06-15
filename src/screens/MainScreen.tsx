@@ -7,66 +7,42 @@ import ProfileIcon from '../assets/icons/profile.svg';
 import { BlurView } from '@react-native-community/blur';
 import Video from 'react-native-video';
 import { useFocusEffect } from '@react-navigation/native';
-
 import React, { useState, useCallback, useRef } from 'react';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const { width: screenWidth } = Dimensions.get('window');
-const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
-const CAROUSEL_PADDING_LEFT = 20; // Отступ слева для карусели
-const CARD_RIGHT_MARGIN = 10; // Отступ справа для каждой карты
-const MAIN_CARD_WIDTH = screenWidth - CAROUSEL_PADDING_LEFT - CARD_RIGHT_MARGIN - 20; // Уменьшаем видимую часть следующей карты (было 40px, стало 20px)
-const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
+const MAIN_CARD_ASPECT_RATIO = 16 / 9;
+const CAROUSEL_PADDING_LEFT = 20;
+const CARD_RIGHT_MARGIN = 10;
+const MAIN_CARD_WIDTH = screenWidth - CAROUSEL_PADDING_LEFT - CARD_RIGHT_MARGIN - 20;
+const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO;
 
-// Пример видео для демонстрации. В реальном приложении это может быть загружено из API
 const sampleVideos = [
-  {
-    id: '1',
- 
-    thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg',
-    type: 'Реклама',
-  },
-  {
-    id: '2',
-   
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg',
- 
-  },
-  {
-    id: '3',
-
-
-    thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg',
-  
-  },
-  {
-    id: '4',
-   
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg',
-
-  },
-  {
-    id: '5',
-   
-    thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg',
- 
-  },
-  {
-    id: '6',
- 
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg',
-
-  },
+  { id: '1', thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg', type: 'Реклама' },
+  { id: '2', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg' },
+  { id: '3', thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg' },
+  { id: '4', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg' },
+  { id: '5', thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg' },
+  { id: '6', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg' },
 ];
 
-const MainScreen: React.FC<any> = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState('Browse');
-  const [isFocused, setIsFocused] = useState(true);
-  const [backgroundColor, setBackgroundColor] = useState('#F07A3E');
+type RootStackParamList = {
+  MainScreen: undefined;
+  FullScreenVideo: { videoUrl?: string; thumbnail: string };
+  Upgrade: undefined;
+};
+
+type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainScreen'>;
+
+type Props = {
+  navigation: MainScreenNavigationProp;
+};
+
+const MainScreen: React.FC<Props> = ({ navigation }) => {  const [isFocused, setIsFocused] = useState(true);
   const scrollX = useRef(new Animated.Value(0)).current;
 
+  
+  
   useFocusEffect(
       useCallback(() => {
         setIsFocused(true);
@@ -74,12 +50,10 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
       }, [])
   );
 
-  const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const inputRange = sampleVideos.map((_, index) => index * (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN));
-
   const backgroundColors = ['#F07A3E', '#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#03A9F4'];
 
   const interpolatedColor = scrollX.interpolate({
@@ -88,42 +62,31 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
     extrapolate: 'clamp',
   });
 
+  
   return (
       <Animated.View style={[styles.container, { backgroundColor: interpolatedColor }]}>
         <SafeAreaView style={styles.safeArea}>
-          {/* Top Header */}
           <View style={[styles.headerContainer, { backgroundColor: 'transparent' }]}>
             <Text style={styles.headerText}>Ideas of the week</Text>
-            <TouchableOpacity
-                style={styles.upgradeButton}
-                onPress={() => navigation.navigate('Upgrade')}
-            >
-              <Text style={styles.upgradeButtonText}>UPGRADE</Text>
+            <TouchableOpacity style={styles.upgradeButton} onPress={() => navigation.navigate('Upgrade')}>
+              <Animated.Text style={[styles.upgradeButtonText, { color: interpolatedColor }]}>UPGRADE</Animated.Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
-            {/* Main Video Card Area */}
             <Animated.FlatList
                 data={sampleVideos.slice(0, 7)}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                    { useNativeDriver: false }
-                )}
+                onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
                 renderItem={({ item, index }) => (
                     <TouchableOpacity
                         style={styles.mainVideoCardWrapper}
                         onPress={() => navigation.navigate('FullScreenVideo', item)}
                     >
                       {!item.videoUrl ? (
-                          <Image
-                              source={{ uri: item.thumbnail }}
-                              style={styles.mainVideoThumbnail}
-                              resizeMode="cover"
-                          />
+                          <Image source={{ uri: item.thumbnail }} style={styles.mainVideoThumbnail} resizeMode="cover" />
                       ) : (
                           <Video
                               source={{ uri: item.videoUrl }}
@@ -136,7 +99,6 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                           />
                       )}
                       <View style={styles.mainVideoOverlay}>
-                      
                         <View style={styles.mainVideoActions}>
                           <View style={styles.mainVideoActivity}>
                             <Text style={styles.playIcon}></Text>
@@ -151,77 +113,44 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                 )}
                 snapToInterval={MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN}
                 decelerationRate="fast"
-                contentContainerStyle={{
-                  paddingHorizontal: (screenWidth - MAIN_CARD_WIDTH) / 2, // ➤ Это центрирует карточки
-                }}
+                contentContainerStyle={{ paddingHorizontal: (screenWidth - MAIN_CARD_WIDTH) / 2 }}
                 onMomentumScrollEnd={(event) => {
-                  const index = Math.round(
-                      event.nativeEvent.contentOffset.x / (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN)
-                  );
+                  const index = Math.round(event.nativeEvent.contentOffset.x / (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN));
                   setActiveIndex(index);
                 }}
             />
 
-            {/* Search Bar */}
             <View style={styles.searchBarContainer}>
               <Text style={styles.searchBarText}>Search...</Text>
-              <TouchableOpacity style={styles.filterButton}>
-                <Text></Text>
-              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterButton}><Text></Text></TouchableOpacity>
             </View>
 
-            {/* Indoor Categories */}
             <View style={styles.categoriesHeader}>
               <Text style={styles.categoriesTitle}>Indoor</Text>
-              <TouchableOpacity style={styles.categoriesArrow}>
-                <Text></Text>
-              </TouchableOpacity>
+              <TouchableOpacity style={styles.categoriesArrow}><Text></Text></TouchableOpacity>
             </View>
-            <FlatList
-                data={otherVideos}
-                renderItem={({ item }) => (
-                    <VideoCard
-                        cardWidth={screenWidth / 2 - 20} // Ширина карты (половина экрана минус отступы)
-                      
-                        videoUrl={item.videoUrl}
-                        onPress={() => navigation.navigate('FullScreenVideo', item)}
-                        isPlaying={false} // Эти карты тоже должны быть статичными миниатюрами
-                        showTitle={true}
-                    />
-                )}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalVideoList}
-            />
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalVideoList}>
+              {otherVideos.slice(0, 4).map((item) => (
+                  <TouchableOpacity
+                      key={item.id}
+                      style={styles.smallCard}
+                      activeOpacity={0.8}
+                      onPress={() => navigation.navigate('FullScreenVideo', item)}
+                  >
+                    <Image source={{ uri: item.thumbnail }} style={styles.smallCardImage} resizeMode="cover" />
+                  </TouchableOpacity>
+              ))}
+            </ScrollView>
           </ScrollView>
 
-          {/* Bottom Navigation */}
           <View style={styles.bottomNavWrapper}>
             <BlurView
                 style={styles.bottomNavBar}
                 blurType="light"
                 blurAmount={10}
                 reducedTransparencyFallbackColor="white">
-              <TouchableOpacity style={styles.navItem}>
-                <BrowseIcon width={33} height={33} fill="white" />
-                <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.navItem}>
-                <LibraryIcon width={33} height={33} fill="white" />
-                <Text style={[styles.navText, { color: 'white' }]}>Library</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.navItem}>
-                <SearchIcon width={33} height={33} fill="white" />
-                <Text style={[styles.navText, { color: 'white' }]}>Search</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.navItem}>
-                <ProfileIcon width={33} height={33} fill="white" />
-                <Text style={[styles.navText, { color: 'white' }]}>Profile</Text>
-              </TouchableOpacity>
+              {/* Навигационные иконки здесь */}
             </BlurView>
           </View>
         </SafeAreaView>
@@ -230,12 +159,8 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+  safeArea: { flex: 1 },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -245,159 +170,57 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     borderBottomRightRadius: 30,
   },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  upgradeButton: {
-    backgroundColor: 'white', // Желтый цвет кнопки Upgrade
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-  },
-  upgradeButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  contentScrollView: {
-    flex: 1,
-  },
+  headerText: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
+  upgradeButton: { backgroundColor: 'white', paddingVertical: 5, paddingHorizontal: 20, borderRadius: 20 },
+  upgradeButtonText: { fontWeight: 'bold', fontSize: 16 },
+  contentScrollView: { flex: 1 },
   mainVideoCardWrapper: {
     width: MAIN_CARD_WIDTH,
     height: 470,
     marginRight: CARD_RIGHT_MARGIN,
     marginTop: 10,
-    borderRadius: 15, // Более скругленные углы
+    borderRadius: 15,
     overflow: 'hidden',
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
     backgroundColor: '#fff',
   },
-  mainVideoThumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  mainVideoOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 15,
-    backgroundColor: 'transparent',
-  },
-  mainVideoTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  mainVideoActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  mainVideoActivity: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: '#fff',
-    marginRight: 5,
-  },
-  activityText: {
-    fontSize: 16,
-    color: '#fff',
-  },
-  bookmarkIcon: {
-    padding: 5,
-  },
-  searchBarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    marginHorizontal: 20, // Увеличиваем горизонтальные отступы
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    marginTop: 20, // Увеличиваем верхний отступ
-  },
-  searchBarText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#666',
-    paddingLeft: 10,
-  },
-  filterButton: {
-    padding: 5,
-  },
-  categoriesHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    paddingTop: 20, // Увеличиваем верхний отступ
-    paddingBottom: 0,
-  },
-  categoriesTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  categoriesArrow: {
-    padding: 5,
-  },
-  horizontalVideoList: {
-    paddingLeft: 10, // Отступ для первого элемента
-    paddingRight: 10, // Отступ для последнего элемента
-    paddingBottom: 10,
-  },
+  mainVideoThumbnail: { width: '100%', height: '100%' },
+  mainVideoOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 15, backgroundColor: 'transparent' },
+  mainVideoActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  mainVideoActivity: { flexDirection: 'row', alignItems: 'center' },
+  playIcon: { fontSize: 20, color: '#fff', marginRight: 5 },
+  activityText: { fontSize: 16, color: '#fff' },
+  bookmarkIcon: { padding: 5 },
+  searchBarContainer: { flexDirection: 'row', alignItems: 'center', padding: 10, marginHorizontal: 20, backgroundColor: '#fff', borderRadius: 25, marginTop: 20 },
+  searchBarText: { flex: 1, fontSize: 16, color: '#666', paddingLeft: 10 },
+  filterButton: { padding: 5 },
+  categoriesHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15, paddingTop: 20, paddingBottom: 0 },
+  categoriesTitle: { fontSize: 20, fontWeight: 'bold', color: '#333' },
+  categoriesArrow: { padding: 5 },
+  horizontalVideoList: { paddingLeft: 15, paddingRight: 10, paddingBottom: 10 },
+  smallCard: { width: screenWidth / 4 - 15, height: screenWidth / 4 - 15, borderRadius: 12, marginRight: 10, overflow: 'hidden', backgroundColor: '#fff' },
+  smallCardImage: { width: '100%', height: '100%' },
   bottomNavBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around', // или 'space-between'
+    justifyContent: 'space-around',
     alignItems: 'center',
     height: 70,
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingBottom: 10,
-    paddingTop: 10,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-  },
-  navItem: {
-  
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 5,
-  },
-  navIcon: {
-    fontSize: 24,
-  },
-  navText: {
-    fontSize: 12,
-    color: '#666',
   },
   bottomNavWrapper: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: 90,
+    height: 70,
     overflow: 'hidden',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
     backgroundColor: 'transparent',
   },
-  mainCarousel: {
-    paddingLeft: CAROUSEL_PADDING_LEFT,
-  },
-
 });
 
-export default MainScreen; 
+export default MainScreen;
