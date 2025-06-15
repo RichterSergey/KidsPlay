@@ -45,7 +45,7 @@ const UpgradeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F07A3E',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   backButtonText: {
-    color: 'white',
+    color: '#000000',
     fontSize: 18,
     fontWeight: 'bold',
   },
   title: {
-    color: 'white',
+    color: '#000000',
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 20,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   upgradeText: {
-    color: 'white',
+    color: '#000000',
     fontSize: 24,
     textAlign: 'center',
     marginTop: 20,
@@ -81,11 +81,11 @@ const styles = StyleSheet.create({
   featuresContainer: {
     marginTop: 30,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#F5F5F5',
     borderRadius: 15,
   },
   featureText: {
-    color: 'white',
+    color: '#000000',
     fontSize: 18,
     marginVertical: 10,
   },
