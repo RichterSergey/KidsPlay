@@ -12,7 +12,9 @@ import React, { useState, useCallback, useRef } from 'react';
 
 const { width: screenWidth } = Dimensions.get('window');
 const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
-const MAIN_CARD_WIDTH = screenWidth - 40; // Ширина главной карты (учитывая marginHorizontal)
+const CAROUSEL_PADDING_LEFT = 20; // Отступ слева для карусели
+const CARD_RIGHT_MARGIN = 10; // Отступ справа для каждой карты
+const MAIN_CARD_WIDTH = screenWidth - CAROUSEL_PADDING_LEFT - CARD_RIGHT_MARGIN - 20; // Уменьшаем видимую часть следующей карты (было 40px, стало 20px)
 const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высота на основе ширины и соотношения сторон
 
 // Пример видео для демонстрации. В реальном приложении это может быть загружено из API
@@ -91,7 +93,6 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
           <Animated.FlatList
               data={sampleVideos.slice(0, 3)}
               horizontal
-              pagingEnabled
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item) => item.id}
               onScroll={Animated.event(
@@ -134,12 +135,12 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                     </View>
                   </TouchableOpacity>
               )}
-              snapToAlignment="center"
+              snapToInterval={MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN}
               decelerationRate="fast"
               contentContainerStyle={styles.mainCarousel}
               onMomentumScrollEnd={(event) => {
                 const index = Math.round(
-                    event.nativeEvent.contentOffset.x / MAIN_CARD_WIDTH
+                    event.nativeEvent.contentOffset.x / (MAIN_CARD_WIDTH + CARD_RIGHT_MARGIN)
                 );
                 setActiveIndex(index);
               }}
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
   mainVideoCardWrapper: {
     width: MAIN_CARD_WIDTH,
     height: 470,
-    marginHorizontal: 20,
+    marginRight: CARD_RIGHT_MARGIN,
     marginTop: 10,
     borderRadius: 15, // Более скругленные углы
     overflow: 'hidden',
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   mainCarousel: {
-    paddingHorizontal: 10,
+    paddingLeft: CAROUSEL_PADDING_LEFT,
   },
   
 });
