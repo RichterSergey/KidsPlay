@@ -13,6 +13,7 @@ import VideoCard from './src/components/VideoCard';
 import FullScreenVideo from './src/screens/FullScreenVideo';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MainScreen from './src/screens/MainScreen';
+import UpgradeScreen from './src/screens/UpgradeScreen';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ type RootStackParamList = {
     videoUrl: string;
     title: string;
   };
+  Upgrade: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -90,6 +92,11 @@ const App = () => {
         <Stack.Screen
           name="FullScreenVideo"
           component={FullScreenVideo}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Upgrade"
+          component={UpgradeScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

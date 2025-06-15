@@ -19,10 +19,10 @@ const MAIN_CARD_HEIGHT = MAIN_CARD_WIDTH / MAIN_CARD_ASPECT_RATIO; // Высот
 const sampleVideos = [
   {
     id: '1',
-    title: '',
+    title: 'Новые игрушки для детей!',
     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    thumbnail: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
-    type: '',
+    thumbnail: 'https://img.freepik.com/free-photo/children-playing-with-toys_23-2148637591.jpg',
+    type: 'Реклама',
   },
   {
     id: '2',
@@ -65,7 +65,10 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
       {/* Top Header */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Ideas of the week</Text>
-        <TouchableOpacity style={styles.upgradeButton}>
+        <TouchableOpacity 
+          style={styles.upgradeButton}
+          onPress={() => navigation.navigate('Upgrade')}
+        >
           <Text style={styles.upgradeButtonText}>UPGRADE</Text>
         </TouchableOpacity>
       </View>
@@ -83,7 +86,14 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                     style={styles.mainVideoCardWrapper}
                     onPress={() => navigation.navigate('FullScreenVideo', item)}
                 >
-                  <Video
+                  {index === 0 ? (
+                    <Image
+                      source={{ uri: item.thumbnail }}
+                      style={styles.mainVideoThumbnail}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Video
                       source={{ uri: item.videoUrl }}
                       style={styles.mainVideoThumbnail}
                       resizeMode="cover"
@@ -91,7 +101,8 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
                       muted
                       paused={!isFocused || activeIndex !== index}
                       ignoreSilentSwitch="obey"
-                  />
+                    />
+                  )}
                   <View style={styles.mainVideoOverlay}>
                     <Text style={styles.mainVideoTitle}>{item.title}</Text>
                     <View style={styles.mainVideoActions}>
