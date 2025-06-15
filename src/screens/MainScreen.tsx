@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ScrollView, FlatList, Image, Animated } from 'react-native';
 import VideoCard from '../components/VideoCard';
 import BrowseIcon from '../assets/icons/browse.svg';
 import LibraryIcon from '../assets/icons/library.svg';
@@ -8,7 +8,7 @@ import { BlurView } from '@react-native-community/blur';
 import Video from 'react-native-video';
 import { useFocusEffect } from '@react-navigation/native';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 const { width: screenWidth } = Dimensions.get('window');
 const MAIN_CARD_ASPECT_RATIO = 16 / 9; // Стандартное соотношение сторон видео
@@ -50,6 +50,8 @@ const sampleVideos = [
 const MainScreen: React.FC<any> = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('Browse');
   const [isFocused, setIsFocused] = useState(true);
+  const [backgroundColor, setBackgroundColor] = useState('#F07A3E');
+  const scrollX = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
       useCallback(() => {
@@ -57,147 +59,165 @@ const MainScreen: React.FC<any> = ({ navigation }) => {
         return () => setIsFocused(false);
       }, [])
   );
+
   const mainVideo = sampleVideos[0];
   const otherVideos = sampleVideos.slice(1);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const backgroundColors = ['#F07A3E', '#4CAF50', '#2196F3', '#9C27B0'];
+
+  const interpolatedColor = scrollX.interpolate({
+    inputRange: [0, screenWidth, screenWidth * 2],
+    outputRange: [backgroundColors[0], backgroundColors[1], backgroundColors[2]],
+    extrapolate: 'clamp'
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Top Header */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Ideas of the week</Text>
-        <TouchableOpacity 
-          style={styles.upgradeButton}
-          onPress={() => navigation.navigate('Upgrade')}
-        >
-          <Text style={styles.upgradeButtonText}>UPGRADE</Text>
-        </TouchableOpacity>
-      </View>
+    <Animated.View style={[styles.container, { backgroundColor: interpolatedColor }]}>
+      <SafeAreaView style={styles.safeArea}>
+        {/* Top Header */}
+        <View style={[styles.headerContainer, { backgroundColor: 'transparent' }]}>
+          <Text style={styles.headerText}>Ideas of the week</Text>
+          <TouchableOpacity 
+            style={styles.upgradeButton}
+            onPress={() => navigation.navigate('Upgrade')}
+          >
+            <Text style={styles.upgradeButtonText}>UPGRADE</Text>
+          </TouchableOpacity>
+        </View>
 
-      <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
-        {/* Main Video Card Area */}
-        <FlatList
-            data={sampleVideos.slice(0, 3)}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-                <TouchableOpacity
-                    style={styles.mainVideoCardWrapper}
-                    onPress={() => navigation.navigate('FullScreenVideo', item)}
-                >
-                  {index === 0 ? (
-                    <Image
-                      source={{ uri: item.thumbnail }}
-                      style={styles.mainVideoThumbnail}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Video
-                      source={{ uri: item.videoUrl }}
-                      style={styles.mainVideoThumbnail}
-                      resizeMode="cover"
-                      repeat
-                      muted
-                      paused={!isFocused || activeIndex !== index}
-                      ignoreSilentSwitch="obey"
-                    />
-                  )}
-                  <View style={styles.mainVideoOverlay}>
-                    <Text style={styles.mainVideoTitle}>{item.title}</Text>
-                    <View style={styles.mainVideoActions}>
-                      <View style={styles.mainVideoActivity}>
-                        <Text style={styles.playIcon}></Text>
-                        <Text style={styles.activityText}>{item.type}</Text>
+        <ScrollView style={styles.contentScrollView} showsVerticalScrollIndicator={false}>
+          {/* Main Video Card Area */}
+          <Animated.FlatList
+              data={sampleVideos.slice(0, 3)}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                { useNativeDriver: false }
+              )}
+              renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                      style={styles.mainVideoCardWrapper}
+                      onPress={() => navigation.navigate('FullScreenVideo', item)}
+                  >
+                    {index === 0 ? (
+                      <Image
+                        source={{ uri: item.thumbnail }}
+                        style={styles.mainVideoThumbnail}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Video
+                        source={{ uri: item.videoUrl }}
+                        style={styles.mainVideoThumbnail}
+                        resizeMode="cover"
+                        repeat
+                        muted
+                        paused={!isFocused || activeIndex !== index}
+                        ignoreSilentSwitch="obey"
+                      />
+                    )}
+                    <View style={styles.mainVideoOverlay}>
+                      <Text style={styles.mainVideoTitle}>{item.title}</Text>
+                      <View style={styles.mainVideoActions}>
+                        <View style={styles.mainVideoActivity}>
+                          <Text style={styles.playIcon}></Text>
+                          <Text style={styles.activityText}>{item.type}</Text>
+                        </View>
+                        <TouchableOpacity style={styles.bookmarkIcon}>
+                          <Text style={{ fontSize: 24 }}></Text>
+                        </TouchableOpacity>
                       </View>
-                      <TouchableOpacity style={styles.bookmarkIcon}>
-                        <Text style={{ fontSize: 24 }}></Text>
-                      </TouchableOpacity>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+              )}
+              snapToAlignment="center"
+              decelerationRate="fast"
+              contentContainerStyle={styles.mainCarousel}
+              onMomentumScrollEnd={(event) => {
+                const index = Math.round(
+                    event.nativeEvent.contentOffset.x / MAIN_CARD_WIDTH
+                );
+                setActiveIndex(index);
+              }}
+          />
+
+          {/* Search Bar */}
+          <View style={styles.searchBarContainer}>
+            <Text style={styles.searchBarText}>🔍 Search...</Text>
+            <TouchableOpacity style={styles.filterButton}>
+              <Text></Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Indoor Categories */}
+          <View style={styles.categoriesHeader}>
+            <Text style={styles.categoriesTitle}>Indoor</Text>
+            <TouchableOpacity style={styles.categoriesArrow}>
+              <Text></Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={otherVideos}
+            renderItem={({ item }) => (
+              <VideoCard
+                cardWidth={screenWidth / 2 - 20} // Ширина карты (половина экрана минус отступы)
+                title={item.title}
+                videoUrl={item.videoUrl}
+                onPress={() => navigation.navigate('FullScreenVideo', item)}
+                isPlaying={false} // Эти карты тоже должны быть статичными миниатюрами
+                showTitle={true}
+              />
             )}
-            snapToAlignment="center"
-            decelerationRate="fast"
-            contentContainerStyle={styles.mainCarousel}
-            onMomentumScrollEnd={(event) => {
-              const index = Math.round(
-                  event.nativeEvent.contentOffset.x / MAIN_CARD_WIDTH
-              );
-              setActiveIndex(index);
-            }}
-        />
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalVideoList}
+          />
+        </ScrollView>
 
-        {/* Search Bar */}
-        <View style={styles.searchBarContainer}>
-          <Text style={styles.searchBarText}>🔍 Search...</Text>
-          <TouchableOpacity style={styles.filterButton}>
-            <Text></Text>
-          </TouchableOpacity>
+        {/* Bottom Navigation */}
+        <View style={styles.bottomNavWrapper}>
+          <BlurView
+              style={styles.bottomNavBar}
+              blurType="light"
+              blurAmount={10}
+              reducedTransparencyFallbackColor="white">
+            <TouchableOpacity style={styles.navItem}>
+              <BrowseIcon width={33} height={33} fill="white" />
+              <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.navItem}>
+              <LibraryIcon width={33} height={33} fill="white" />
+              <Text style={[styles.navText, { color: 'white' }]}>Library</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.navItem}>
+              <SearchIcon width={33} height={33} fill="white" />
+              <Text style={[styles.navText, { color: 'white' }]}>Search</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.navItem}>
+              <ProfileIcon width={33} height={33} fill="white" />
+              <Text style={[styles.navText, { color: 'white' }]}>Profile</Text>
+            </TouchableOpacity>
+          </BlurView>
         </View>
-
-        {/* Indoor Categories */}
-        <View style={styles.categoriesHeader}>
-          <Text style={styles.categoriesTitle}>Indoor</Text>
-          <TouchableOpacity style={styles.categoriesArrow}>
-            <Text></Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={otherVideos}
-          renderItem={({ item }) => (
-            <VideoCard
-              cardWidth={screenWidth / 2 - 20} // Ширина карты (половина экрана минус отступы)
-              title={item.title}
-              videoUrl={item.videoUrl}
-              onPress={() => navigation.navigate('FullScreenVideo', item)}
-              isPlaying={false} // Эти карты тоже должны быть статичными миниатюрами
-              showTitle={true}
-            />
-          )}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalVideoList}
-        />
-      </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavWrapper}>
-        <BlurView
-            style={styles.bottomNavBar}
-            blurType="light"
-            blurAmount={10}
-            reducedTransparencyFallbackColor="white">
-          <TouchableOpacity style={styles.navItem}>
-            <BrowseIcon width={33} height={33} fill="white" />
-            <Text style={[styles.navText, { color: 'white' }]}>Browse</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <LibraryIcon width={33} height={33} fill="white" />
-            <Text style={[styles.navText, { color: 'white' }]}>Library</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <SearchIcon width={33} height={33} fill="white" />
-            <Text style={[styles.navText, { color: 'white' }]}>Search</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <ProfileIcon width={33} height={33} fill="white" />
-            <Text style={[styles.navText, { color: 'white' }]}>Profile</Text>
-          </TouchableOpacity>
-        </BlurView>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </Animated.View>
   );
 }; 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F07A3E', // Светло-голубой фон как на изображении
+  },
+  safeArea: {
+    flex: 1,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -205,9 +225,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#F07A3E', // Цвет заголовка как на изображении
     paddingTop: 50,
-    borderBottomRightRadius: 30, // Для диагонального эффекта
+    borderBottomRightRadius: 30,
   },
   headerText: {
     fontSize: 20,
